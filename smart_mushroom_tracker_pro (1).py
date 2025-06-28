@@ -40,14 +40,14 @@ if data_source == "Local File":
     local_path = st.sidebar.text_input("📁 Local JSON path", "sensor_data.json")
     try:
         with open(local_path, "r") as f:
-    json_data = json.load(f)
-    if isinstance(json_data, list) and len(json_data) > 0:
-        latest = json_data[-1]  # Get most recent day's data
-        sensor_data["Temperature"] = latest.get("temperature")
-        sensor_data["Humidity"] = latest.get("humidity")
-    elif isinstance(json_data, dict):
-        sensor_data["Temperature"] = json_data.get("temperature")
-        sensor_data["Humidity"] = json_data.get("humidity")
+            json_data = json.load(f)
+            if isinstance(json_data, list) and len(json_data) > 0:
+               latest = json_data[-1]  # Get most recent day's data
+               sensor_data["Temperature"] = latest.get("temperature")
+               sensor_data["Humidity"] = latest.get("humidity")
+            elif isinstance(json_data, dict):
+               sensor_data["Temperature"] = json_data.get("temperature")
+               sensor_data["Humidity"] = json_data.get("humidity")
 
     except Exception as e:
         st.sidebar.error(f"Error reading local file: {e}")
