@@ -36,6 +36,10 @@ data_source = st.sidebar.radio("Choose data source:", ["Manual Entry", "Local Fi
 
 sensor_data = {"Temperature": None, "Humidity": None}
 
+if data_source == "Manual Entry":
+    st.info("Using simulated/manual data.")
+    sensor_data = get_sensor_data()
+    
 elif data_source == "Local File":
     local_path = st.sidebar.text_input("📁 Local JSON path", "sensor_data.json")
     try:
@@ -51,7 +55,7 @@ elif data_source == "Local File":
                 sensor_data["Humidity"] = selected_entry.get("humidity")
             else:
                 st.sidebar.warning("No valid dates found in sensor file.")
-        elif isinstance(json_data, dict):  # fallback for single object
+        elif isinstance(json_data, dict):
             sensor_data["Temperature"] = json_data.get("temperature")
             sensor_data["Humidity"] = json_data.get("humidity")
         else:
@@ -59,6 +63,7 @@ elif data_source == "Local File":
 
     except Exception as e:
         st.sidebar.error(f"Error reading local file: {e}")
+
 
 elif data_source == "Remote URL":
     import requests
