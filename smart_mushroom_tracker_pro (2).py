@@ -36,13 +36,27 @@ data_source = st.sidebar.radio("Choose data source:", ["Manual Entry", "Local Fi
 
 sensor_data = {"Temperature": None, "Humidity": None}
 
-if data_source == "Local File":
+elif data_source == "Local File":
     local_path = st.sidebar.text_input("📁 Local JSON path", "sensor_data.json")
     try:
         with open(local_path, "r") as f:
             json_data = json.load(f)
+
+        if isinstance(json_data, list) and all(isinstance(entry, dict) for entry in json_data):
+            valid_dates = [entry["date"] for entry in json_data if "date" in entry]
+            if valid_dates:
+                selected_date = st.sidebar.selectbox("📅 Select Date", sorted(valid_dates, reverse=True))
+                selected_entry = next((item for item in json_data if item.get("date") == selected_date), {})
+                sensor_data["Temperature"] = selected_entry.get("temperature")
+                sensor_data["Humidity"] = selected_entry.get("humidity")
+            else:
+                st.sidebar.warning("No valid dates found in sensor file.")
+        elif isinstance(json_data, dict):  # fallback for single object
             sensor_data["Temperature"] = json_data.get("temperature")
             sensor_data["Humidity"] = json_data.get("humidity")
+        else:
+            st.sidebar.error("Unsupported data format in JSON file.")
+
     except Exception as e:
         st.sidebar.error(f"Error reading local file: {e}")
 
